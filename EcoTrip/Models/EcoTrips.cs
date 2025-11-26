@@ -8,6 +8,9 @@ namespace EcoTrip.Models
         [Required]
         public string country { get; set; }
         [Required]
+        public string country_description { get; set; }
+
+        [Required]
         public string city { get; set; }
         [Required]
         public string hotel_name {  get; set; }
