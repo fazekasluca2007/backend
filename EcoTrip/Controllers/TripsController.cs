@@ -6,20 +6,20 @@ namespace EcoTrip.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EcoTripController : ControllerBase
+    public class TripsController : ControllerBase
     {
         private readonly EcoTripDbContext _context;
 
-        public EcoTripController()
+        public TripsController()
         {
             _context = new EcoTripDbContext();
         }
 
-        // Ecotrips oldal kártyáihoz
-        [HttpGet("ecotripcards")]
-        public ActionResult GetEcoTripsBasic()
+        //Trips oldal kártyáihoz
+        [HttpGet("tripcards")]
+        public ActionResult GetTripsBasic()
         {
-            var result = (from t in _context.eco_trips
+            var result = (from t in _context.trips
                           join c in _context.countrys on t.country_id equals c.id
                           select new
                           {
@@ -35,11 +35,12 @@ namespace EcoTrip.Controllers
             return Ok(result);
         }
 
-        // Modal ablak adatai
+
+        //Modal ablak adatai
         [HttpGet("modal")]
-        public ActionResult GetEcoTripsList()
+        public ActionResult GetTripsList()
         {
-            var result = _context.eco_trips
+            var result = _context.trips
                 .Select(t => new
                 {
                     image_url = t.image_url,
@@ -51,11 +52,11 @@ namespace EcoTrip.Controllers
             return Ok(result);
         }
 
-        // Külön ablak adatai
+        //Külön oldal adatai
         [HttpGet("detailed")]
-        public ActionResult GetEcoTripsDetails()
+        public ActionResult GetTripsDetails()
         {
-            var result = _context.eco_trips
+            var result = _context.trips
                 .Select(t => new
                 {
                     image_url = t.image_url,

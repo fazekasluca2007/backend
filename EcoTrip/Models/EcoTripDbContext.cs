@@ -8,6 +8,9 @@ namespace EcoTrip.Models
 
         public EcoTripDbContext(DbContextOptions options) : base(options){}
         public DbSet<EcoTrips> eco_trips {  get; set; }
+        public DbSet<Trips> trips { get; set; }
+        public DbSet<Country> countrys { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

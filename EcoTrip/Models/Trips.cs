@@ -2,11 +2,10 @@
 
 namespace EcoTrip.Models
 {
-    public class EcoTrips
+    public class Trips
     {
         public int id { get; set; }
 
-        [Required]
         public int country_id { get; set; }
 
         [Required]
@@ -15,23 +14,18 @@ namespace EcoTrip.Models
         [Required]
         public string hotel_name { get; set; }
 
-        [Required]
         public int stars { get; set; }
 
         public string short_description { get; set; }
         public string long_description { get; set; }
 
-        [Required]
         public string services { get; set; }
 
-        [Required]
         public string image_url { get; set; }
 
-        [Required]
         public string modalId { get; set; }
 
-        [Required]
-        public int price { get; set; }
+        public decimal price { get; set; }
 
         public int available { get; set; }
     }
