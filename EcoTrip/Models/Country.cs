@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace EcoTrip.Models
 {
@@ -11,5 +11,6 @@ namespace EcoTrip.Models
 
         [Required]
         public string country_description { get; set; }
+        public string? flag_url { get; set; } 
     }
 }
