@@ -1,4 +1,4 @@
-﻿using EcoTrip.Models;
+using EcoTrip.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,20 +19,41 @@ namespace EcoTrip.Controllers
         [HttpGet("ecotripcards")]
         public ActionResult GetEcoTripsBasic()
         {
-            var result = (from t in _context.eco_trips
-                          join c in _context.countrys on t.country_id equals c.id
-                          select new
-                          {
-                              id = t.id,
-                              country = c.country,
-                              country_description = c.country_description,
-                              city = t.city,
-                              hotel_name = t.hotel_name,
-                              stars = t.stars,
-                              image_url = t.image_url
-                          }).ToList();
+            var trips = (from t in _context.eco_trips
+                         join c in _context.countrys on t.country_id equals c.id
+                         select new
+                         {
+                             TripId = t.id,
+                             Country = c.country,
+                             CountryDescription = c.country_description,
+                             FlagUrl = c.flag_url,         // <-- Most közvetlenül az adatbázisból
+                             City = t.city,
+                             HotelName = t.hotel_name,
+                             Stars = t.stars,
+                             ImageUrl = t.image_url,
+                             ModalId = t.modalId
+                         })
+                         .ToList();
 
-            return Ok(result);
+            var grouped = trips
+                .GroupBy(x => x.Country)
+                .Select(g => new
+                {
+                    country = g.Key,
+                    flag = g.First().FlagUrl ?? "https://flagcdn.com/256x192/xx.png", // fallback, ha NULL
+                    description = g.First().CountryDescription,
+                    hotels = g.Select(h => new
+                    {
+                        modalId = h.ModalId,
+                        city = h.City,
+                        hotel_name = h.HotelName,
+                        stars = h.Stars,
+                        image_url = h.ImageUrl
+                    }).ToList()
+                })
+                .ToList();
+
+            return Ok(new { result = grouped });
         }
 
         // Modal ablak adatai
