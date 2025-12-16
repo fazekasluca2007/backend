@@ -19,14 +19,15 @@ namespace EcoTrip.Controllers
         [HttpGet("ecotripcards")]
         public ActionResult GetEcoTripsBasic()
         {
-            var trips = (from t in _context.eco_trips
+            var trips = (from t in _context.trips
                          join c in _context.countrys on t.country_id equals c.id
+                         where t.type == 1
                          select new
                          {
                              TripId = t.id,
                              Country = c.country,
                              CountryDescription = c.country_description,
-                             FlagUrl = c.flag_url,         // <-- Most közvetlenül az adatbázisból
+                             FlagUrl = c.flag_url,
                              City = t.city,
                              HotelName = t.hotel_name,
                              Stars = t.stars,
@@ -40,7 +41,7 @@ namespace EcoTrip.Controllers
                 .Select(g => new
                 {
                     country = g.Key,
-                    flag = g.First().FlagUrl ?? "https://flagcdn.com/256x192/xx.png", // fallback, ha NULL
+                    flag = g.First().FlagUrl,
                     description = g.First().CountryDescription,
                     hotels = g.Select(h => new
                     {
@@ -60,14 +61,16 @@ namespace EcoTrip.Controllers
         [HttpGet("modal")]
         public ActionResult GetEcoTripsList()
         {
-            var result = _context.eco_trips
+            var result = _context.trips
+                .Where(t => t.type == 1)
                 .Select(t => new
                 {
                     image_url = t.image_url,
                     city = t.city,
                     hotel_name = t.hotel_name,
                     stars = t.stars
-                }).ToList();
+                })
+                .ToList();
 
             return Ok(result);
         }
@@ -76,7 +79,8 @@ namespace EcoTrip.Controllers
         [HttpGet("detailed")]
         public ActionResult GetEcoTripsDetails()
         {
-            var result = _context.eco_trips
+            var result = _context.trips
+                .Where(t => t.type == 1)
                 .Select(t => new
                 {
                     image_url = t.image_url,
@@ -84,8 +88,14 @@ namespace EcoTrip.Controllers
                     hotel_name = t.hotel_name,
                     stars = t.stars,
                     long_description = t.long_description,
-                    services = t.services
-                }).ToList();
+                    services = t.services,
+
+                    images = _context.trips_images
+                        .Where(img => img.trip_id == t.id)
+                        .Select(img => img.image_url)
+                        .ToList()
+                })
+                .ToList();
 
             return Ok(result);
         }

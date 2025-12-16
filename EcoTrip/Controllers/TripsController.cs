@@ -19,20 +19,42 @@ namespace EcoTrip.Controllers
         [HttpGet("tripcards")]
         public ActionResult GetTripsBasic()
         {
-            var result = (from t in _context.trips
-                          join c in _context.countrys on t.country_id equals c.id
-                          select new
-                          {
-                              id = t.id,
-                              country = c.country,
-                              country_description = c.country_description,
-                              city = t.city,
-                              hotel_name = t.hotel_name,
-                              stars = t.stars,
-                              image_url = t.image_url
-                          }).ToList();
+            var trips = (from t in _context.trips
+                         join c in _context.countrys on t.country_id equals c.id
+                         where t.type == 0
+                         select new
+                         {
+                             TripId = t.id,
+                             Country = c.country,
+                             CountryDescription = c.country_description,
+                             FlagUrl = c.flag_url,
+                             City = t.city,
+                             HotelName = t.hotel_name,
+                             Stars = t.stars,
+                             ImageUrl = t.image_url,
+                             ModalId = t.modalId
+                         })
+                 .ToList();
 
-            return Ok(result);
+            var grouped = trips
+                .GroupBy(x => x.Country)
+                .Select(g => new
+                {
+                    country = g.Key,
+                    flag = g.First().FlagUrl,
+                    description = g.First().CountryDescription,
+                    hotels = g.Select(h => new
+                    {
+                        modalId = h.ModalId,
+                        city = h.City,
+                        hotel_name = h.HotelName,
+                        stars = h.Stars,
+                        image_url = h.ImageUrl
+                    }).ToList()
+                })
+                .ToList();
+
+            return Ok(new { result = grouped });
         }
 
 
@@ -41,13 +63,15 @@ namespace EcoTrip.Controllers
         public ActionResult GetTripsList()
         {
             var result = _context.trips
-                .Select(t => new
-                {
-                    image_url = t.image_url,
-                    city = t.city,
-                    hotel_name = t.hotel_name,
-                    stars = t.stars
-                }).ToList();
+            .Where(t => t.type == 0)
+            .Select(t => new
+            {
+                image_url = t.image_url,
+                city = t.city,
+                hotel_name = t.hotel_name,
+                stars = t.stars
+            })
+            .ToList();
 
             return Ok(result);
         }
@@ -57,6 +81,7 @@ namespace EcoTrip.Controllers
         public ActionResult GetTripsDetails()
         {
             var result = _context.trips
+                .Where(t => t.type == 0)
                 .Select(t => new
                 {
                     image_url = t.image_url,
@@ -64,8 +89,14 @@ namespace EcoTrip.Controllers
                     hotel_name = t.hotel_name,
                     stars = t.stars,
                     long_description = t.long_description,
-                    services = t.services
-                }).ToList();
+                    services = t.services,
+
+                    images = _context.trips_images
+                        .Where(img => img.trip_id == t.id)
+                        .Select(img => img.image_url)
+                        .ToList()
+                })
+                .ToList();
 
             return Ok(result);
         }

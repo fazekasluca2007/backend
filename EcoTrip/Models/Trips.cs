@@ -6,6 +6,7 @@ namespace EcoTrip.Models
     {
         public int id { get; set; }
 
+        public int type { get; set; }   // ✅ EZ AZ ÚJ (0 = trips, 1 = ecotrips)
         public int country_id { get; set; }
 
         [Required]
