@@ -1,4 +1,4 @@
-﻿using EcoTrip.Models;
+using EcoTrip.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +45,7 @@ namespace EcoTrip.Controllers
                     description = g.First().CountryDescription,
                     hotels = g.Select(h => new
                     {
+                        id = h.TripId,
                         modalId = h.ModalId,
                         city = h.City,
                         hotel_name = h.HotelName,
@@ -59,31 +60,36 @@ namespace EcoTrip.Controllers
 
 
         //Modal ablak adatai
-        [HttpGet("modal")]
-        public ActionResult GetTripsList()
+        [HttpGet("modal/{id}")]
+        public ActionResult GetTripModal(int id)
         {
             var result = _context.trips
-            .Where(t => t.type == 0)
-            .Select(t => new
-            {
-                image_url = t.image_url,
-                city = t.city,
-                hotel_name = t.hotel_name,
-                stars = t.stars
-            })
-            .ToList();
+                .Where(t => t.id == id && t.type == 0)
+                .Select(t => new
+                {
+                    id = t.id,
+                    image_url = t.image_url,
+                    city = t.city,
+                    hotel_name = t.hotel_name,
+                    stars = t.stars
+                })
+                .FirstOrDefault();
+
+            if (result == null)
+                return NotFound("Nincs ilyen trip");
 
             return Ok(result);
         }
 
         //Külön oldal adatai
-        [HttpGet("detailed")]
-        public ActionResult GetTripsDetails()
+        [HttpGet("detailed/{id}")]
+        public ActionResult GetTripDetails(int id)
         {
             var result = _context.trips
-                .Where(t => t.type == 0)
+                .Where(t => t.id == id && t.type == 0)
                 .Select(t => new
                 {
+                    id = t.id,
                     image_url = t.image_url,
                     city = t.city,
                     hotel_name = t.hotel_name,
@@ -96,7 +102,10 @@ namespace EcoTrip.Controllers
                         .Select(img => img.image_url)
                         .ToList()
                 })
-                .ToList();
+                .FirstOrDefault();
+
+            if (result == null)
+                return NotFound("Nincs ilyen trip");
 
             return Ok(result);
         }
