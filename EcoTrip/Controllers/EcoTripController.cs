@@ -45,6 +45,7 @@ namespace EcoTrip.Controllers
                     description = g.First().CountryDescription,
                     hotels = g.Select(h => new
                     {
+                        id = h.TripId,
                         modalId = h.ModalId,
                         city = h.City,
                         hotel_name = h.HotelName,
@@ -58,31 +59,36 @@ namespace EcoTrip.Controllers
         }
 
         // Modal ablak adatai
-        [HttpGet("modal")]
-        public ActionResult GetEcoTripsList()
+        [HttpGet("modal/{id}")]
+        public ActionResult GetEcoTripModal(int id)
         {
             var result = _context.trips
-                .Where(t => t.type == 1)
+                .Where(t => t.id == id && t.type == 1)
                 .Select(t => new
                 {
+                    id = t.id,
                     image_url = t.image_url,
                     city = t.city,
                     hotel_name = t.hotel_name,
                     stars = t.stars
                 })
-                .ToList();
+                .FirstOrDefault();
+
+            if (result == null)
+                return NotFound("Nincs ilyen eco trip");
 
             return Ok(result);
         }
 
         // Külön ablak adatai
-        [HttpGet("detailed")]
-        public ActionResult GetEcoTripsDetails()
+        [HttpGet("detailed/{id}")]
+        public ActionResult GetEcoTripDetails(int id)
         {
             var result = _context.trips
-                .Where(t => t.type == 1)
+                .Where(t => t.id == id && t.type == 1)
                 .Select(t => new
                 {
+                    id = t.id,
                     image_url = t.image_url,
                     city = t.city,
                     hotel_name = t.hotel_name,
@@ -95,7 +101,10 @@ namespace EcoTrip.Controllers
                         .Select(img => img.image_url)
                         .ToList()
                 })
-                .ToList();
+                .FirstOrDefault();
+
+            if (result == null)
+                return NotFound("Nincs ilyen eco trip");
 
             return Ok(result);
         }
