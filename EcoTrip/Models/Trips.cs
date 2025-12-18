@@ -29,5 +29,7 @@ namespace EcoTrip.Models
         public decimal price { get; set; }
 
         public int available { get; set; }
+        public virtual ICollection<TripRoute> TripRoutes { get; set; } = new List<TripRoute>();
+        public virtual ICollection<TripsImage> TripsImages { get; set; } = new List<TripsImage>();
     }
 }

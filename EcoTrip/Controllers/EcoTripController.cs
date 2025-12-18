@@ -1,6 +1,7 @@
 using EcoTrip.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoTrip.Controllers
 {
@@ -63,14 +64,20 @@ namespace EcoTrip.Controllers
         public ActionResult GetEcoTripModal(int id)
         {
             var result = _context.trips
+                .Include(t => t.TripsImages)  // Betöltjük a galéria képeket
                 .Where(t => t.id == id && t.type == 1)
                 .Select(t => new
                 {
                     id = t.id,
-                    image_url = t.image_url,
+                    main_image = t.image_url,  // fő kép (kártyán látható)
                     city = t.city,
                     hotel_name = t.hotel_name,
-                    stars = t.stars
+                    stars = t.stars,
+                    short_description = t.short_description,
+                    //Kepek a szallasokrol
+                    gallery_images = t.TripsImages
+                        .Select(img => img.image_url)
+                        .ToList()
                 })
                 .FirstOrDefault();
 
@@ -85,20 +92,25 @@ namespace EcoTrip.Controllers
         public ActionResult GetEcoTripDetails(int id)
         {
             var result = _context.trips
+                .Include(t => t.TripRoutes)       // Betöltjük a kapcsolódó útvonalakat
+                .Include(t => t.TripsImages)
                 .Where(t => t.id == id && t.type == 1)
                 .Select(t => new
                 {
                     id = t.id,
-                    image_url = t.image_url,
+                    main_image = t.image_url,
                     city = t.city,
                     hotel_name = t.hotel_name,
                     stars = t.stars,
+                    price = t.price,
                     long_description = t.long_description,
-                    services = t.services,
+                    services = t.services ?? "",
 
-                    images = _context.trips_images
-                        .Where(img => img.trip_id == t.id)
+                    gallery_images = t.TripsImages
                         .Select(img => img.image_url)
+                        .ToList(),
+                    routes = t.TripRoutes
+                        .Select(r => r.route_text)
                         .ToList()
                 })
                 .FirstOrDefault();

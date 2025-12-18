@@ -1,9 +1,15 @@
-﻿namespace EcoTrip.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EcoTrip.Models
 {
+    [Table("trips_images")]
     public class TripsImage
     {
         public int id { get; set; }
         public int trip_id { get; set; }
         public string image_url { get; set; }
+
+        [ForeignKey("trip_id")]  // <-- EZ A FONTOS SOR! Megmondjuk, melyik oszlop a FK
+        public virtual Trips Trip { get; set; }
     }
 }
