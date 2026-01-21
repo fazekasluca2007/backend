@@ -16,7 +16,13 @@ namespace EcoTrip.Controllers
             _context = new EcoTripDbContext();
         }
 
-        //Trips oldal kártyáihoz
+
+        /// <summary>
+        /// Sima utak lekérése kártyára
+        /// </summary>
+        /// <remarks>
+        /// Összes út adatai kártyára
+        /// </remarks>
         [HttpGet("tripcards")]
         public ActionResult GetTripsBasic()
         {
@@ -60,35 +66,13 @@ namespace EcoTrip.Controllers
         }
 
 
-        //Modal ablak adatai
-        [HttpGet("modal/{id}")]
-        public ActionResult GetTripModal(int id)
-        {
-            var result = _context.trips
-                .Include(t => t.TripsImages)  // Betöltjük a galéria képeket
-                .Where(t => t.id == id && t.type == 0)
-                .Select(t => new
-                {
-                    id = t.id,
-                    main_image = t.image_url,  // fő kép (kártyán látható)
-                    city = t.city,
-                    hotel_name = t.hotel_name,
-                    stars = t.stars,
-                    short_description = t.short_description,
-                    //Kepek a szallasokrol
-                    gallery_images = t.TripsImages
-                        .Select(img => img.image_url)
-                        .ToList()
-                })
-                .FirstOrDefault();
 
-            if (result == null)
-                return NotFound("Nincs ilyen trip");
-
-            return Ok(result);
-        }
-
-        //Külön oldal adatai
+        /// <summary>
+        /// Sima utak lekérése id alapján
+        /// </summary>
+        /// <remarks>
+        /// Egy út adata
+        /// </remarks>
         [HttpGet("detailed/{id}")]
         public ActionResult GetTripDetails(int id)
         {

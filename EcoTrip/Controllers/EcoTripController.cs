@@ -16,7 +16,12 @@ namespace EcoTrip.Controllers
             _context = new EcoTripDbContext();
         }
 
-        // Ecotrips oldal kártyáihoz
+        /// <summary>
+        /// Öko utak lekérése kártyára
+        /// </summary>
+        /// <remarks>
+        /// Összes ökoút adatai kártyára
+        /// </remarks>
         [HttpGet("ecotripcards")]
         public ActionResult GetEcoTripsBasic()
         {
@@ -59,35 +64,13 @@ namespace EcoTrip.Controllers
             return Ok(new { result = grouped });
         }
 
-        // Modal ablak adatai
-        [HttpGet("modal/{id}")]
-        public ActionResult GetEcoTripModal(int id)
-        {
-            var result = _context.trips
-                .Include(t => t.TripsImages)  // Betöltjük a galéria képeket
-                .Where(t => t.id == id && t.type == 1)
-                .Select(t => new
-                {
-                    id = t.id,
-                    main_image = t.image_url,  // fő kép (kártyán látható)
-                    city = t.city,
-                    hotel_name = t.hotel_name,
-                    stars = t.stars,
-                    short_description = t.short_description,
-                    //Kepek a szallasokrol
-                    gallery_images = t.TripsImages
-                        .Select(img => img.image_url)
-                        .ToList()
-                })
-                .FirstOrDefault();
 
-            if (result == null)
-                return NotFound("Nincs ilyen eco trip");
-
-            return Ok(result);
-        }
-
-        // Külön ablak adatai
+        /// <summary>
+        /// Öko utak lekérése id alapján
+        /// </summary>
+        /// <remarks>
+        /// Egy út adata
+        /// </remarks>
         [HttpGet("detailed/{id}")]
         public ActionResult GetEcoTripDetails(int id)
         {
