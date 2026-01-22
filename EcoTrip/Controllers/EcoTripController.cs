@@ -75,7 +75,7 @@ namespace EcoTrip.Controllers
         public ActionResult GetEcoTripDetails(int id)
         {
             var result = _context.trips
-                .Include(t => t.TripRoutes)       // Betöltjük a kapcsolódó útvonalakat
+                .Include(t => t.TripRoutes)
                 .Include(t => t.TripsImages)
                 .Where(t => t.id == id && t.type == 1)
                 .Select(t => new
