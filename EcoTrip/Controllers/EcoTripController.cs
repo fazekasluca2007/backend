@@ -37,8 +37,7 @@ namespace EcoTrip.Controllers
                              City = t.city,
                              HotelName = t.hotel_name,
                              Stars = t.stars,
-                             ImageUrl = t.image_url,
-                             ModalId = t.modalId
+                             ImageUrl = t.image_url
                          })
                          .ToList();
 
@@ -52,7 +51,6 @@ namespace EcoTrip.Controllers
                     hotels = g.Select(h => new
                     {
                         id = h.TripId,
-                        modalId = h.ModalId,
                         city = h.City,
                         hotel_name = h.HotelName,
                         stars = h.Stars,
@@ -87,7 +85,6 @@ namespace EcoTrip.Controllers
                     stars = t.stars,
                     price = t.price,
                     long_description = t.long_description,
-                    services = t.services ?? "",
 
                     gallery_images = t.TripsImages
                         .Select(img => img.image_url)

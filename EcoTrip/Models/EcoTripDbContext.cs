@@ -12,6 +12,7 @@ namespace EcoTrip.Models
         public DbSet<TripsImage> trips_images { get; set; }
         public DbSet<TripsMapLocations> TripsMapLocations { get; set; }
         public DbSet<Reviews> Reviews { get; set; }
+        public DbSet<Users> Users => Set<Users>();
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

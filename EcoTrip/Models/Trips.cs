@@ -17,14 +17,10 @@ namespace EcoTrip.Models
 
         public int stars { get; set; }
 
-        public string short_description { get; set; }
         public string long_description { get; set; }
 
-        public string services { get; set; }
 
         public string image_url { get; set; }
-
-        public string modalId { get; set; }
 
         public decimal price { get; set; }
 
