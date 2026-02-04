@@ -84,7 +84,7 @@ namespace EcoTrip.Controllers
 
 
         /// <summary>
-        /// Bejelentkezés get
+        /// Bejelentkezés post
         /// </summary>
         /// <remarks>
         /// Bejelentkezés
@@ -92,15 +92,15 @@ namespace EcoTrip.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Username);
 
             if (user == null)
-                return Unauthorized("Hibás email vagy jelszó");
+                return Unauthorized("Hibás felhasználónév vagy jelszó");
 
             var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
             if (result == PasswordVerificationResult.Failed)
-                return Unauthorized("Hibás email vagy jelszó");
+                return Unauthorized("Hibás felhasználónév vagy jelszó");
 
             var token = GenerateJwtToken(user);
 
