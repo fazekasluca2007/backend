@@ -9,18 +9,29 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors();
+//builder.Services.AddCors();
 
 
 
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    // opcionális: options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
@@ -37,8 +48,7 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "nagyonhosszujelszovallegalabb32karakter"))
     };
 
-    // opcionális: ha Swaggerből teszed és https nélkül
-    options.RequireHttpsMetadata = false;           // fejlesztéshez
+    options.RequireHttpsMetadata = false;
     options.SaveToken = true;
 });
 
@@ -73,13 +83,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(policy => policy
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-);
+//app.UseCors(policy => policy
+//    .AllowAnyOrigin()
+//    .AllowAnyMethod()
+//    .AllowAnyHeader()
+//);
+app.UseRouting();
 
-
+app.UseCors("DevCors");
 
 app.UseAuthentication();
 app.UseAuthorization();
