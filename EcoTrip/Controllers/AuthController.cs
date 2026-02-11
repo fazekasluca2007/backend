@@ -92,7 +92,7 @@ namespace EcoTrip.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
 
             if (user == null)
                 return Unauthorized("Hibás felhasználónév vagy jelszó");
