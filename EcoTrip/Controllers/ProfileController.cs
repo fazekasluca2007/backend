@@ -65,22 +65,16 @@ namespace EcoTrip.Controllers
         /// <remarks>
         /// Profil adatok lekérése
         /// </remarks>
-        [HttpGet]
-        public async Task<IActionResult> GetProfile()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProfile(int id)
         {
-            var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return Unauthorized("Érvénytelen token.");
-            }
-
             var user = await _context.Users
-                .Where(u => u.Id == userId)
+                .Where(u => u.Id == id)
                 .Select(u => new
                 {
+                    u.Id,
                     u.FullName,
-                    u.ProfileImage,
+                    u.ProfileImage
                 })
                 .FirstOrDefaultAsync();
 
