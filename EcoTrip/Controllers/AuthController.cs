@@ -26,12 +26,15 @@ namespace EcoTrip.Controllers
 
         private string GenerateJwtToken(Users user)
         {
+            var role = user.Admin == 1 ? "Admin" : "User";
+
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Username)
-    };
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+                new Claim(ClaimTypes.Role, role)
+            };
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("EcoTrip_Dev_Secret_Key_123456789_ABC_xyz")

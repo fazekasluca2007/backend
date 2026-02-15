@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace EcoTrip.Controllers
 {
@@ -20,21 +22,24 @@ namespace EcoTrip.Controllers
 
 
         /// <summary>
-        /// Get bookings by user id
+        /// Get bookings by token user id
         /// </summary>
         /// <remarks>
-        /// Get bookings by user id
+        /// Get bookings by token user id
         /// </remarks>
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetUserBookings(int userId)
+        [Authorize]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyBookings()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Érvénytelen token.");
+
             var bookings = await _context.Bookings
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.CreatedAt)
                 .ToListAsync();
-
-            if (!bookings.Any())
-                return NotFound("Nincs foglalás ehhez a felhasználóhoz.");
 
             return Ok(bookings);
         }
@@ -49,15 +54,33 @@ namespace EcoTrip.Controllers
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
         {
             if (dto.Seats <= 0)
-                return BadRequest("Seats must be greater than 0.");
+                return BadRequest("A helyek számának 0-nál nagyobbnak kell lennie!");
+
+            if (dto.Days <= 0)
+                return BadRequest("A napok számának 0-nál nagyobbnak kell lennie!");
+
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Érvénytelen token.");
+
+            var trip = await _context.trips.FindAsync(dto.TripId);
+
+            if (trip == null)
+                return NotFound("Trip nem található.");
+
+            decimal totalPrice = trip.price * dto.Days * dto.Seats;
 
             var booking = new Booking
             {
-                UserId = dto.UserId,
+                UserId = userId,
                 TripId = dto.TripId,
                 Seats = dto.Seats,
-                TotalPrice = dto.TotalPrice,
-                Status = "pending"
+                Days = dto.Days,
+                PaymentType = dto.PaymentType,
+                TotalPrice = totalPrice,
+                Status = "pending",
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Bookings.Add(booking);
@@ -66,16 +89,18 @@ namespace EcoTrip.Controllers
             return Ok(new
             {
                 message = "Foglalás létrehozva",
-                bookingId = booking.Id
+                bookingId = booking.Id,
+                totalPrice = booking.TotalPrice
             });
         }
 
         /// <summary>
-        /// Booking delete
+        /// Booking delete by id
         /// </summary>
         /// <remarks>
-        /// Booking delete
+        /// Booking delete by id
         /// </remarks>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
@@ -120,10 +145,10 @@ namespace EcoTrip.Controllers
         }
         public class CreateBookingDto
         {
-            public int UserId { get; set; }
-            public int? TripId { get; set; }
+            public int TripId { get; set; }
             public int Seats { get; set; }
-            public decimal TotalPrice { get; set; }
+            public int Days { get; set; }
+            public string PaymentType { get; set; }
         }
 
         public class UpdateBookingStatusDto

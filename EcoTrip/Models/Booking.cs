@@ -15,14 +15,19 @@ namespace EcoTrip.Models
         [Column("trip_id")]
         public int? TripId { get; set; }
 
+        [Column("seats")]
         public int Seats { get; set; }
+        [Column("days")]
+        public int Days { get; set; }
 
         [Column("total_price")]
         public decimal TotalPrice { get; set; }
+        [Column("payment_type")]
+        public string PaymentType { get; set; }
 
         public string Status { get; set; }
 
         [Column("created_at")]
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }
