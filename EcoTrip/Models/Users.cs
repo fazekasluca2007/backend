@@ -27,7 +27,7 @@ namespace EcoTrip.Models
         public string PasswordHash { get; set; } = null!;
 
         [Column("profile_image")]
-        public string? ProfileImage { get; set; }  // Nullable, as in your table
+        public string? ProfileImage { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }

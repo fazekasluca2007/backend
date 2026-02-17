@@ -9,7 +9,7 @@ namespace EcoTrip.Models
         public int trip_id { get; set; }
         public string image_url { get; set; }
 
-        [ForeignKey("trip_id")]  // <-- EZ A FONTOS SOR! Megmondjuk, melyik oszlop a FK
+        [ForeignKey("trip_id")] 
         public virtual Trips Trip { get; set; }
     }
 }

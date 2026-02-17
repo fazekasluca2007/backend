@@ -56,8 +56,15 @@ namespace EcoTrip.Controllers
             if (dto.Seats <= 0)
                 return BadRequest("A helyek számának 0-nál nagyobbnak kell lennie!");
 
-            if (dto.Days <= 0)
-                return BadRequest("A napok számának 0-nál nagyobbnak kell lennie!");
+            if (dto.StartDate == default || dto.EndDate == default)
+                return BadRequest("Kezdő és záró dátum megadása kötelező!");
+
+            if (dto.EndDate <= dto.StartDate)
+                return BadRequest("A záró dátumnak későbbinek kell lennie, mint a kezdő dátum!");
+
+            var days = (dto.EndDate.Date - dto.StartDate.Date).Days;
+            if (days <= 0)
+                return BadRequest("Legalább 1 napos foglalás szükséges!");
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
@@ -67,20 +74,21 @@ namespace EcoTrip.Controllers
             var trip = await _context.trips.FindAsync(dto.TripId);
 
             if (trip == null)
-                return NotFound("Trip nem található.");
+                return NotFound("Utazás nem található.");
 
-            decimal totalPrice = trip.price * dto.Days * dto.Seats;
+            decimal totalPrice = trip.price * days * dto.Seats;
 
             var booking = new Booking
             {
                 UserId = userId,
                 TripId = dto.TripId,
                 Seats = dto.Seats,
-                Days = dto.Days,
+                Days = days,
+                StartDate = dto.StartDate.Date,
+                EndDate = dto.EndDate.Date,
                 PaymentType = dto.PaymentType,
                 TotalPrice = totalPrice,
-                Status = "pending",
-                CreatedAt = DateTime.UtcNow
+                Status = "pending"
             };
 
             _context.Bookings.Add(booking);
@@ -147,7 +155,8 @@ namespace EcoTrip.Controllers
         {
             public int TripId { get; set; }
             public int Seats { get; set; }
-            public int Days { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
             public string PaymentType { get; set; }
         }
 

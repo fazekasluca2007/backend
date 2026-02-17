@@ -63,11 +63,22 @@ namespace EcoTrip.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Email) ||
+                    string.IsNullOrWhiteSpace(dto.Username) ||
+                    string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest("Hiányzó vagy érvénytelen adatok");
+            }
+
             if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-                return BadRequest("Email már létezik");
+            {
+                return Conflict("Ez az email már foglalt");
+            }
 
             if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
-                return BadRequest("Felhasználónév már létezik");
+            {
+                return Conflict("Ez a felhasználónév már foglalt");
+            }
 
             var user = new Users
             {
@@ -95,6 +106,11 @@ namespace EcoTrip.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest("Felhasználónév és jelszó megadása kötelezõ");
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
 
             if (user == null)

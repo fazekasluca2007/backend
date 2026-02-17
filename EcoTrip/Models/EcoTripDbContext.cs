@@ -21,5 +21,15 @@ namespace EcoTrip.Models
             optionsBuilder.UseMySQL("server=localhost;database=ecotrip;user=root;password=");
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Booking>()
+                .Property(b => b.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP()")
+                .ValueGeneratedOnAdd();
+        }
+
     }
 }

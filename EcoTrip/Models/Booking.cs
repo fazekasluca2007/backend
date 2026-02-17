@@ -19,6 +19,11 @@ namespace EcoTrip.Models
         public int Seats { get; set; }
         [Column("days")]
         public int Days { get; set; }
+        [Column("start_date")]
+        public DateTime StartDate { get; set; }
+
+        [Column("end_date")]
+        public DateTime EndDate { get; set; }
 
         [Column("total_price")]
         public decimal TotalPrice { get; set; }
