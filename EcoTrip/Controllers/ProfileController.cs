@@ -65,22 +65,29 @@ namespace EcoTrip.Controllers
         /// <remarks>
         /// Profil adatok lekérése
         /// </remarks>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProfile(int id)
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("Érvénytelen vagy hiányzó felhasználói azonosító.");
+            }
+
             var user = await _context.Users
-                .Where(u => u.Id == id)
+                .Where(u => u.Id == userId)
                 .Select(u => new
                 {
                     u.Id,
                     u.FullName,
+                    u.Email,
                     u.ProfileImage
                 })
                 .FirstOrDefaultAsync();
 
             if (user == null)
             {
-                return NotFound("Felhasználó nem található.");
+                return NotFound();
             }
 
             return Ok(user);
