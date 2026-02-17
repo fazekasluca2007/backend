@@ -32,13 +32,38 @@ namespace EcoTrip.Controllers
         public async Task<IActionResult> GetMyBookings()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Érvénytelen token.");
+
+
+            var user = await _context.Users
+                .AsNoTracking()
+                .Select(u => new { u.Id, u.Email })
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return Unauthorized("Felhasználó nem található.");
 
             var bookings = await _context.Bookings
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.CreatedAt)
+                .Select(b => new MyBookingResponseDto
+                {
+                    Id = b.Id,
+                    TripId = b.TripId,
+                    HotelName = _context.trips
+                        .Where(t => t.id == b.TripId)
+                        .Select(t => t.hotel_name)
+                        .FirstOrDefault() ?? "Ismeretlen",
+                    Seats = b.Seats,
+                    Days = b.Days,
+                    PaymentType = b.PaymentType,
+                    TotalPrice = b.TotalPrice,
+                    Status = b.Status,
+                    CreatedAt = b.CreatedAt,
+
+                    UserEmail = user.Email
+                })
                 .ToListAsync();
 
             return Ok(bookings);
@@ -163,6 +188,20 @@ namespace EcoTrip.Controllers
         public class UpdateBookingStatusDto
         {
             public string Status { get; set; }
+        }
+
+        public class MyBookingResponseDto
+        {
+            public int Id { get; set; }
+            public int TripId { get; set; }
+            public string HotelName { get; set; }
+            public int Seats { get; set; }
+            public int Days { get; set; }
+            public string PaymentType { get; set; }
+            public decimal TotalPrice { get; set; }
+            public string Status { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UserEmail { get; set; }
         }
     }
 }

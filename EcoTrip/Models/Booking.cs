@@ -13,7 +13,7 @@ namespace EcoTrip.Models
         public int UserId { get; set; }
 
         [Column("trip_id")]
-        public int? TripId { get; set; }
+        public int TripId { get; set; }
 
         [Column("seats")]
         public int Seats { get; set; }
@@ -33,6 +33,6 @@ namespace EcoTrip.Models
         public string Status { get; set; }
 
         [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
