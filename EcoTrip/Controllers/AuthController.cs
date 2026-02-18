@@ -85,6 +85,7 @@ namespace EcoTrip.Controllers
                 FullName = dto.FullName,
                 Username = dto.Username,
                 Email = dto.Email,
+                ProfileImage = "https://www.gravatar.com/avatar/?d=mp&s=200",
                 CreatedAt = DateTime.UtcNow
             };
 

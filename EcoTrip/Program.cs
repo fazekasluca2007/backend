@@ -1,4 +1,6 @@
 ﻿using EcoTrip.Models;
+using EcoTrip.Services;
+using EcoTrip.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -12,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //builder.Services.AddCors();
 
-
+builder.Services.AddScoped<IMail, Mail>();
 
 
 // Add services to the container.

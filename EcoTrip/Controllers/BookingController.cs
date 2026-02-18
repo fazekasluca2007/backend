@@ -135,7 +135,6 @@ namespace EcoTrip.Controllers
         /// <remarks>
         /// Booking delete by id
         /// </remarks>
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
@@ -143,6 +142,15 @@ namespace EcoTrip.Controllers
 
             if (booking == null)
                 return NotFound("Foglalás nem található.");
+
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Érvénytelen token.");
+
+            if (booking.UserId != userId && !User.IsInRole("Admin"))
+                return Forbid("Nincs jogosultság a foglalás törléséhez.");
 
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
