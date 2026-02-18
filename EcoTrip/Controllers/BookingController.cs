@@ -57,6 +57,8 @@ namespace EcoTrip.Controllers
                         .FirstOrDefault() ?? "Ismeretlen",
                     Seats = b.Seats,
                     Days = b.Days,
+                    StartDate = b.StartDate,
+                    EndDate = b.EndDate,
                     PaymentType = b.PaymentType,
                     TotalPrice = b.TotalPrice,
                     Status = b.Status,
@@ -197,6 +199,8 @@ namespace EcoTrip.Controllers
             public string HotelName { get; set; }
             public int Seats { get; set; }
             public int Days { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
             public string PaymentType { get; set; }
             public decimal TotalPrice { get; set; }
             public string Status { get; set; }
