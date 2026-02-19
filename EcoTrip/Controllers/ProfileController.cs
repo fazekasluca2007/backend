@@ -176,6 +176,51 @@ namespace EcoTrip.Controllers
             return Ok(user);
         }
 
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteMyProfile()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("Érvénytelen token.");
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound("Felhasználó nem található.");
+            }
+
+            var userBookings = await _context.Bookings
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+
+            if (userBookings.Any())
+            {
+                _context.Bookings.RemoveRange(userBookings);
+            }
+
+
+            _context.Users.Remove(user);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                
+                return StatusCode(500, "Nem sikerült törölni a fiókot – valószínűleg még más kapcsolódó adatok léteznek az adatbázisban. " +
+                                       "Próbáld később, vagy vedd fel velünk a kapcsolatot.");
+            }
+
+            return Ok(new
+            {
+                message = "Fiókod, az összes foglalásod és értékelésed sikeresen törölve."
+            });
+        }
 
 
         public class UpdateUsernameDto
