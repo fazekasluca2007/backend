@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using EcoTrip.Models.DtoS;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -177,12 +178,17 @@ namespace EcoTrip.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<IActionResult> DeleteMyProfile()
+        public async Task<IActionResult> DeleteMyProfile([FromBody] DeleteProfileDto dto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Érvénytelen token.");
+            }
+
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest("Jelszó megadása kötelező.");
             }
 
             var user = await _context.Users
@@ -191,6 +197,14 @@ namespace EcoTrip.Controllers
             if (user == null)
             {
                 return NotFound("Felhasználó nem található.");
+            }
+
+            var hasher = new PasswordHasher<Users>();
+
+            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return BadRequest("Hibás jelszó.");
             }
 
             var userBookings = await _context.Bookings
@@ -202,43 +216,21 @@ namespace EcoTrip.Controllers
                 _context.Bookings.RemoveRange(userBookings);
             }
 
-
             _context.Users.Remove(user);
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                
-                return StatusCode(500, "Nem sikerült törölni a fiókot – valószínűleg még más kapcsolódó adatok léteznek az adatbázisban. " +
-                                       "Próbáld később, vagy vedd fel velünk a kapcsolatot.");
+                return StatusCode(500, "Nem sikerült törölni a fiókot – valószínűleg még más kapcsolódó adatok léteznek az adatbázisban.");
             }
 
             return Ok(new
             {
-                message = "Fiókod, az összes foglalásod és értékelésed sikeresen törölve."
+                message = "Fiókod sikeresen törölve."
             });
-        }
-
-
-        public class UpdateUsernameDto
-        {
-            public string UserName { get; set; }
-        }
-
-        public class UpdatePasswordDto
-        {
-            public string OldPassword { get; set; }
-            public string NewPassword { get; set; }
-        }
-
-
-
-        public class UpdateProfileImageDto
-        {
-            public string ImageUrl { get; set; }
         }
 
     }

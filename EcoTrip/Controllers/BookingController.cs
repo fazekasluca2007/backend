@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using EcoTrip.Models.DtoS;
 using System.Security.Claims;
 
 namespace EcoTrip.Controllers
@@ -186,34 +187,8 @@ namespace EcoTrip.Controllers
                 booking.Status
             });
         }
-        public class CreateBookingDto
-        {
-            public int TripId { get; set; }
-            public int Seats { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime EndDate { get; set; }
-            public string PaymentType { get; set; }
-        }
+        
 
-        public class UpdateBookingStatusDto
-        {
-            public string Status { get; set; }
-        }
-
-        public class MyBookingResponseDto
-        {
-            public int Id { get; set; }
-            public int TripId { get; set; }
-            public string HotelName { get; set; }
-            public int Seats { get; set; }
-            public int Days { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime EndDate { get; set; }
-            public string PaymentType { get; set; }
-            public decimal TotalPrice { get; set; }
-            public string Status { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public string UserEmail { get; set; }
-        }
+        
     }
 }
