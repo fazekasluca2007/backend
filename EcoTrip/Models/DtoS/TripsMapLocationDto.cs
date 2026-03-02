@@ -5,6 +5,7 @@
         public string Country { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string HotelName { get; set; } = string.Empty;
+        public int TripId { get; set; }
 
         public string Description { get; set; } = string.Empty;
         public int Stars { get; set; }
