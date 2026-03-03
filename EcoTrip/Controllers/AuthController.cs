@@ -131,7 +131,8 @@ namespace EcoTrip.Controllers
                 {
                     user.Id,
                     user.Username,
-                    user.Email
+                    user.Email,
+                    user.FullName
                 }
             });
         }
