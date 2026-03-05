@@ -32,6 +32,7 @@ namespace EcoTrip.Controllers
         [HttpGet("my")]
         public async Task<IActionResult> GetMyBookings()
         {
+            //Token ellenőrzése
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Érvénytelen token.");
@@ -81,6 +82,7 @@ namespace EcoTrip.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
         {
+            //Alap adatok ellenőrzése
             if (dto.Seats <= 0)
                 return BadRequest("A helyek számának 0-nál nagyobbnak kell lennie!");
 
@@ -96,6 +98,7 @@ namespace EcoTrip.Controllers
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+            //Token ellenőrzése
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Érvénytelen token.");
 
@@ -147,6 +150,7 @@ namespace EcoTrip.Controllers
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            //Token ellenőrzése
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Érvénytelen token.");
 

@@ -28,6 +28,7 @@ namespace EcoTrip.Controllers
         {
             var role = user.Admin == 1 ? "Admin" : "User";
 
+            //Hozzáadás a tokenhez
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -36,6 +37,7 @@ namespace EcoTrip.Controllers
                 new Claim(ClaimTypes.Role, role)
             };
 
+            //A kulcs
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("EcoTrip_Dev_Secret_Key_123456789_ABC_xyz")
             );
@@ -63,6 +65,7 @@ namespace EcoTrip.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
+            //Ellenõrzések
             if (dto == null || string.IsNullOrWhiteSpace(dto.Email) ||
                     string.IsNullOrWhiteSpace(dto.Username) ||
                     string.IsNullOrWhiteSpace(dto.Password))
@@ -88,7 +91,7 @@ namespace EcoTrip.Controllers
                 ProfileImage = "https://www.gravatar.com/avatar/?d=mp&s=200",
                 CreatedAt = DateTime.UtcNow
             };
-
+            //Jelszó hashelése
             user.PasswordHash = _hasher.HashPassword(user, dto.Password);
 
             _context.Users.Add(user);
@@ -107,6 +110,7 @@ namespace EcoTrip.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
+            //Ellenõzrések
             if (dto == null || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
             {
                 return BadRequest("Felhasználónév és jelszó megadása kötelezõ");
@@ -126,6 +130,7 @@ namespace EcoTrip.Controllers
 
             return Ok(new
             {
+                //Token létrehozása
                 token,
                 user = new
                 {

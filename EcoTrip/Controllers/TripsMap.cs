@@ -66,6 +66,7 @@ namespace EcoTrip.Controllers
         [HttpPost("Sima")]
         public async Task<IActionResult> CreateNormalMapLocation([FromBody] TripsMapLocationCreateDto dto)
         {
+            //Koordináták ellenőrzése
             if (dto.Latitude < -90 || dto.Latitude > 90 || dto.Longitude < -180 || dto.Longitude > 180)
             {
                 return BadRequest("Érvénytelen koordináták.");
@@ -144,6 +145,7 @@ namespace EcoTrip.Controllers
         [HttpPost("Eco")]
         public async Task<IActionResult> CreateEcoMapLocation([FromBody] TripsMapLocationCreateDto dto)
         {
+            //Koordináták ellenőrzése
             if (dto.Latitude < -90 || dto.Latitude > 90 || dto.Longitude < -180 || dto.Longitude > 180)
             {
                 return BadRequest("Érvénytelen koordináták.");
