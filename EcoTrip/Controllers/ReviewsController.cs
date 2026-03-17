@@ -57,6 +57,7 @@ namespace EcoTrip.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Reviews updatedReview)
         {
+            // Ellenőrzések
             if (updatedReview == null)
                 return BadRequest("Hiányzik a review objektum");
 
@@ -67,6 +68,7 @@ namespace EcoTrip.Controllers
 
             bool modified = false;
 
+            // Módosítás
             if (!string.IsNullOrWhiteSpace(updatedReview.Name) &&
                 updatedReview.Name != existing.Name)
             {

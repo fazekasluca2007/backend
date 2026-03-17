@@ -33,7 +33,10 @@ namespace EcoTrip.Controllers
         [HttpPut("username")]
         public async Task<IActionResult> UpdateUsername([FromBody] UpdateUsernameDto dto)
         {
+            // Tokenből kinyerjük a userId-t
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Ellenőrzések
             if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Érvénytelen token.");
 
@@ -73,7 +76,10 @@ namespace EcoTrip.Controllers
         [HttpPut("password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto dto)
         {
+            // Tokenből kinyerjük a userId-t
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Ellenőrzések
             if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
                 return Unauthorized("Érvénytelen token.");
 
@@ -115,7 +121,10 @@ namespace EcoTrip.Controllers
         [HttpPut("image")]
         public async Task<IActionResult> UpdateProfileImage([FromBody] UpdateProfileImageDto dto)
         {
+            // Tokenből kinyerjük a userId-t
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Ellenőrzések
             if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Érvénytelen token.");
@@ -152,12 +161,16 @@ namespace EcoTrip.Controllers
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {
+            // Tokenből kinyerjük a userId-t
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            //Ellenőrzések
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Érvénytelen vagy hiányzó felhasználói azonosító.");
             }
 
+            // Adatok lekédezése
             var user = await _context.Users
                 .Where(u => u.Id == userId)
                 .Select(u => new
@@ -180,7 +193,10 @@ namespace EcoTrip.Controllers
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteMyProfile([FromBody] DeleteProfileDto dto)
         {
+            // Tokenből kinyerjük a userId-t
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Ellenőrzések
             if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Érvénytelen token.");
@@ -199,6 +215,7 @@ namespace EcoTrip.Controllers
                 return NotFound("Felhasználó nem található.");
             }
 
+            // Jelszó hashelése
             var hasher = new PasswordHasher<Users>();
 
             var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);

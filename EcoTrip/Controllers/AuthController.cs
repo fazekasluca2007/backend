@@ -18,9 +18,9 @@ namespace EcoTrip.Controllers
         private readonly EcoTripDbContext _context;
         private readonly PasswordHasher<Users> _hasher = new();
 
-        public AuthController()
+        public AuthController(EcoTripDbContext context)
         {
-            _context = new EcoTripDbContext();
+            _context = context;
         }
 
 

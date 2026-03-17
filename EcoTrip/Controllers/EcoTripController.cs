@@ -25,6 +25,7 @@ namespace EcoTrip.Controllers
         [HttpGet("ecotripcards")]
         public ActionResult GetEcoTripsBasic()
         {
+            // Öko utak adatainak lekérése kártyákhoz
             var trips = (from t in _context.trips
                          join c in _context.countrys on t.country_id equals c.id
                          where t.type == 1
@@ -41,6 +42,7 @@ namespace EcoTrip.Controllers
                          })
                          .ToList();
 
+            // Az adatokat országonként csoportosítjuk, és a szükséges mezőket kiválasztjuk
             var grouped = trips
                 .GroupBy(x => x.Country)
                 .Select(g => new
@@ -72,6 +74,7 @@ namespace EcoTrip.Controllers
         [HttpGet("detailed/{id}")]
         public ActionResult GetEcoTripDetails(int id)
         {
+            // A megadott id-hez tartozó ökoút adatok lekérése
             var result = _context.trips
                 .Include(t => t.TripRoutes)
                 .Include(t => t.TripsImages)

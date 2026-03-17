@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="EcoTrip/EcoTrip.csproj" />
+  <Project Path="EcoTripBackendTest/EcoTripBackendTest.csproj" Id="08997a4c-c167-4f70-a786-ce201527e7d7" />
 </Solution>

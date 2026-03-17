@@ -27,6 +27,7 @@ namespace EcoTrip.Controllers
         [HttpGet("Sima")]
         public async Task<IActionResult> GetNormalTrips()
         {
+            // Sima utak térképes adatainak lekérése
             var locations = await _context.TripsMapLocations
                 .Join(
                     _context.trips,
@@ -105,6 +106,7 @@ namespace EcoTrip.Controllers
         [HttpGet("Eco")]
         public async Task<IActionResult> GetEcoTrips()
         {
+            // Öko utak térképes adatainak lekérése
             var locations = await _context.TripsMapLocations
                 .Join(
                     _context.trips,
