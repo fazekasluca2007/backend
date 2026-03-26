@@ -1,4 +1,5 @@
 ﻿# Backend mappaszerkezet
+```
 EcoTrip/				→ fő projekt mappa
 ├── Controllers/						→ API végpontok
 │   ├── AuthController.cs				
@@ -26,3 +27,4 @@ EcoTrip/				→ fő projekt mappa
 ├── EcoTrip.http
 ├── appsettings.json
 └── EcoTrip.csproj
+```
